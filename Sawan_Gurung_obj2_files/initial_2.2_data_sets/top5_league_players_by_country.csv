@@ -1,0 +1,44 @@
+﻿Rank,Country,Code,English Premier League,German Bundesliga,Spanish La Liga,French Ligue 1,Italian Serie A,Total players
+1,England,ENG,21,2,3,0,0,26
+1,Germany,GER,5,20,1,0,0,26
+1,Spain,ESP,7,1,17,1,0,26
+4,France,FRA,7,2,3,8,4,24
+5,Netherlands,NED,16,1,1,1,4,23
+5,Switzerland,SUI,4,8,4,3,4,23
+7,Argentina,ARG,6,1,7,5,2,21
+8,Belgium,BEL,7,1,2,5,5,20
+8,Senegal,SEN,7,2,2,8,1,20
+10,Austria,AUT,1,14,2,0,0,17
+10,Croatia,CRO,2,5,3,0,7,17
+10,Morocco,MAR,4,2,4,6,1,17
+10,Norway,NOR,7,3,2,0,5,17
+10,Portugal,POR,7,0,4,4,2,17
+15,Brazil,BRA,8,0,2,2,3,15
+15,Sweden,SWE,8,3,1,0,3,15
+17,Ivory Coast,CIV,3,2,1,4,3,13
+17,Japan,JPN,3,7,1,1,1,13
+17,USA,USA,4,3,1,3,2,13
+20,Ghana,GHA,1,1,4,6,0,12
+20,Scotland,SCO,8,0,0,0,4,12
+22,Algeria,ALG,1,4,0,5,1,11
+23,DR Congo,COD,4,0,2,4,0,10
+24,Canada,CAN,1,1,3,2,2,9
+24,Turkey,TUR,2,3,1,0,3,9
+26,Colombia,COL,2,1,2,1,2,8
+26,Uruguay,URU,3,0,4,0,1,8
+28,Czechia,CZE,2,4,0,1,0,7
+28,Tunisia,TUN,1,3,0,3,0,7
+30,Bosnia & Herzegovina,BIH,0,3,0,1,2,6
+30,Ecuador,ECU,3,1,0,1,1,6
+30,Mexico,MEX,2,0,2,0,2,6
+33,Australia,AUS,0,2,1,0,2,5
+33,South Korea,KOR,1,3,0,1,0,5
+35,Egypt,EGY,2,0,1,1,0,4
+35,Haiti,HAI,2,0,0,2,0,4
+35,Paraguay,PAR,2,0,0,1,1,4
+38,Cape Verde,CPV,0,0,1,0,0,1
+38,Jordan,JOR,0,0,0,1,0,1
+38,New Zealand,NZL,1,0,0,0,0,1
+38,Saudi Arabia,KSA,0,0,0,1,0,1
+38,South Africa,RSA,1,0,0,0,0,1
+38,Uzbekistan,UZB,1,0,0,0,0,1
