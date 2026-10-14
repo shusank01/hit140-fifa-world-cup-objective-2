@@ -3,11 +3,11 @@ FIFA World Cup 2026 - Linear Regression 2.2
 Predict the number of goals a team scores in one match (208 rows = 104 matches x 2 teams)
 using exactly 8 explanatory variables that are known before the match.
 
-Output: Data_2_2_final.csv now also contains predicted_goals (and error predicting how far off the model is ) for every row.
+Output: Data_2_2_final.csv now also contains predicted_goals for every row.
 """
 
 import matplotlib
-matplotlib.use("Agg")                  
+matplotlib.use("Agg")
 from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
@@ -188,14 +188,13 @@ oof_pred = cross_val_predict(LinearRegression(), X, y,
                              groups=df["match_id"],
                              cv=GroupKFold(n_splits=5))
 
-out = df.copy()                                         # df and X stay unchanged
+out = df.copy()                                                # df and X stay unchanged
 out["predicted_goals"] = np.clip(oof_pred, 0, None).round(2)   # goals cannot be below 0
-out["error"] = (out[TARGET] - out["predicted_goals"]).round(2)  # actual - predicted
 
 out.to_csv(OUTPUT_FILE, index=False)
-print(out[["match_id", "team", "opponent", TARGET, "predicted_goals", "error"]].head(10).to_string(index=False))
+print(out[["match_id", "team", "opponent", TARGET, "predicted_goals"]].head(10).to_string(index=False))
 print(f"\nSaved {OUTPUT_FILE} with {out.shape[1]} columns "
-      f"({len(ID_COLS)} ID + 1 target + {len(FEATURES)} explanatory + predicted_goals + error)")
+      f"({len(ID_COLS)} ID + 1 target + {len(FEATURES)} explanatory + predicted_goals)")
 o_rmse, o_mae, o_r2 = metrics(out[TARGET], out["predicted_goals"])
 print(f"Out-of-fold accuracy on all 208 rows: RMSE = {o_rmse:.3f}, MAE = {o_mae:.3f}, R2 = {o_r2:.3f}")
 
