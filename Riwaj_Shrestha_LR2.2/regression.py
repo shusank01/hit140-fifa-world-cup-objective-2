@@ -3,24 +3,26 @@ FIFA World Cup 2026 - Linear Regression 2.2
 Predict the number of goals a team scores in one match (208 rows = 104 matches x 2 teams)
 using exactly 8 explanatory variables that are known before the match.
 
+Output: Data_2_2_final.csv now also contains predicted_goals (and error predicting how far off the model is ) for every row.
 """
 
+import matplotlib
+matplotlib.use("Agg")                  
 from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib
-matplotlib.use("Agg")                     
 import seaborn as sns
 import statsmodels.api as sm
 from scipy import stats
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 from statsmodels.stats.diagnostic import het_breuschpagan
 from statsmodels.stats.stattools import durbin_watson
-from sklearn.model_selection import GroupShuffleSplit, GroupKFold
+from sklearn.model_selection import GroupShuffleSplit, GroupKFold, cross_val_predict
 from sklearn.linear_model import LinearRegression
 
 
-DATA_FILE = "Data_2.csv"               
+DATA_FILE = "Data_2.csv"
+OUTPUT_FILE = "Data_2_2_final.csv"
 SEED = 42
 
 ID_COLS = ["match_id", "date", "team", "opponent"]
@@ -28,7 +30,7 @@ TARGET = "goals_for"
 FEATURES = ["rest_days", "stage", "avg_age",
             "prev_avg_scored", "prev_avg_conceded",
             "opp_prev_avg_scored", "opp_prev_avg_conceded",
-            "team_top5_players"]           
+            "team_top5_players"]
 
 pd.set_option("display.width", 150)
 pd.set_option("display.max_columns", 30)
@@ -41,7 +43,7 @@ def heading(text):
     print("=" * 78)
 
 
-#1. Load the data
+# 1. Load the data
 
 heading("1. LOAD AND CHECK THE DATA")
 if DATA_FILE.lower().endswith(".csv"):
@@ -50,7 +52,7 @@ else:
     raw = pd.read_excel(DATA_FILE)
 
 
-if raw["stage"].dtype == object:
+if not pd.api.types.is_numeric_dtype(raw["stage"]):
     stage_num = {"Group": 1, "R32": 2, "R16": 3, "Quarter": 4,
                  "Semi": 5, "Third": 6, "Final": 6}
     raw["stage"] = raw["stage"].map(stage_num)
@@ -60,16 +62,17 @@ df = raw[ID_COLS + [TARGET] + FEATURES].copy()
 
 print("Rows:", len(df))
 print("Matches:", df["match_id"].nunique(), "| rows per match:", df.groupby("match_id").size().unique())
-print("Teams:", df["team"].nunique())
+print("Teams:", df["team"].nunique(), "(a World Cup with 48 teams should show 48)")
 print("Missing values:", int(df[FEATURES + [TARGET]].isna().sum().sum()))
 assert len(df) == 208 and df[FEATURES + [TARGET]].isna().sum().sum() == 0
 
+# Spelling check: each team should appear about 3 to 8 times
+team_counts = df["team"].value_counts()
+print("Teams with fewer than 3 rows (possible spelling problem):",
+      list(team_counts[team_counts < 3].index))
 
-df.to_csv("Data_2_2_final.csv", index=False)
-print("Saved Data_2_2_final.csv with", df.shape[1], "columns")
 
-
-#2. Descriptive statistics and plots
+# 2. Descriptive statistics and plots
 
 heading("2. DESCRIPTIVE STATISTICS")
 print(df[[TARGET] + FEATURES].describe().T.round(3))
@@ -176,6 +179,27 @@ cv.loc["mean"] = cv.mean().round(3)
 print(cv)
 
 
+# 6b. Predicted goals for every row, saved in the final CSV
+
+heading("6b. PREDICTED GOALS FOR ALL 208 ROWS (saved in " + OUTPUT_FILE + ")")
+# Out-of-fold predictions: each row is predicted by a model that never saw its match
+# (both rows of a match stay in the same fold), so the predictions are honest.
+oof_pred = cross_val_predict(LinearRegression(), X, y,
+                             groups=df["match_id"],
+                             cv=GroupKFold(n_splits=5))
+
+out = df.copy()                                         # df and X stay unchanged
+out["predicted_goals"] = np.clip(oof_pred, 0, None).round(2)   # goals cannot be below 0
+out["error"] = (out[TARGET] - out["predicted_goals"]).round(2)  # actual - predicted
+
+out.to_csv(OUTPUT_FILE, index=False)
+print(out[["match_id", "team", "opponent", TARGET, "predicted_goals", "error"]].head(10).to_string(index=False))
+print(f"\nSaved {OUTPUT_FILE} with {out.shape[1]} columns "
+      f"({len(ID_COLS)} ID + 1 target + {len(FEATURES)} explanatory + predicted_goals + error)")
+o_rmse, o_mae, o_r2 = metrics(out[TARGET], out["predicted_goals"])
+print(f"Out-of-fold accuracy on all 208 rows: RMSE = {o_rmse:.3f}, MAE = {o_mae:.3f}, R2 = {o_r2:.3f}")
+
+
 # 7. Check the model assumptions
 
 heading("7. ASSUMPTION CHECKS")
@@ -225,4 +249,5 @@ robust = pd.DataFrame({"coef (all data)": full.params,
 print(f"All-data model: R-squared = {full.rsquared:.3f}, adjusted R-squared = {full.rsquared_adj:.3f}")
 print(robust)
 
-heading("DONE - figures saved: fig1_goals_and_correlation.png, fig2_predicted_vs_actual.png, fig3_residual_diagnostics.png")
+heading("DONE - saved: " + OUTPUT_FILE + ", fig1_goals_and_correlation.png, "
+        "fig2_predicted_vs_actual.png, fig3_residual_diagnostics.png")
