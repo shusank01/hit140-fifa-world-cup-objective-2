@@ -37,9 +37,11 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
 
-DATA_FILE = "Data_2.csv"
-OUTPUT_FILE = "Data_2_2_final.csv"
-FIG_DIR = "Figures"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FILE = os.path.join(BASE_DIR, "Data_2.csv")
+OUTPUT_FILE = os.path.join(BASE_DIR, "Data_2_2_final.csv")
+COMPARISON_FILE = os.path.join(BASE_DIR, "model_comparison.csv")
+FIG_DIR = os.path.join(BASE_DIR, "Figures")
 SEED = 42
 
 os.makedirs(FIG_DIR, exist_ok=True)
@@ -90,7 +92,7 @@ else:
 required_columns = ID_COLS + [TARGET] + FEATURES
 missing_columns = [col for col in required_columns if col not in raw.columns]
 if missing_columns:
-    raise ValueError(f"Missing required columns in {DATA_FILE}: {missing_columns}")
+    raise ValueError(f"Missing required columns in {os.path.basename(DATA_FILE)}: {missing_columns}")
 
 # Convert named tournament stages into ordered numeric values, if necessary.
 if not pd.api.types.is_numeric_dtype(raw["stage"]):
@@ -307,7 +309,7 @@ print(cv.mean().round(3))
 
 # 6b. Out-of-fold predictions for all rows. The model predicting a row did not
 # train on either team row from that row's match.
-heading(f"6b. OUT-OF-FOLD PREDICTIONS (saved in {OUTPUT_FILE})")
+heading(f"6b. OUT-OF-FOLD PREDICTIONS (saved in {os.path.basename(OUTPUT_FILE)})")
 oof_pred = cross_val_predict(
     LinearRegression(),
     X,
@@ -330,7 +332,7 @@ out["predicted_goals"] = np.clip(oof_pred, 0, None).round(2)
 out.to_csv(OUTPUT_FILE, index=False)
 print(out[["match_id", "team", "opponent", TARGET, "predicted_goals"]].head(10).to_string(index=False))
 print(
-    f"\nSaved {OUTPUT_FILE} with {out.shape[1]} columns "
+    f"\nSaved {os.path.basename(OUTPUT_FILE)} with {out.shape[1]} columns "
     f"({len(ID_COLS)} ID + 1 target + {len(FEATURES)} explanatory + predicted_goals)."
 )
 
@@ -416,7 +418,7 @@ comparison["RMSE vs baseline (%)"] = (
     (comparison["RMSE"] / baseline_rmse_cv - 1) * 100
 ).round(1)
 print("\n" + comparison.to_string())
-comparison.to_csv("model_comparison.csv", index_label="Model")
+comparison.to_csv(COMPARISON_FILE, index_label="Model")
 best_model = comparison["RMSE"].idxmin()
 print(f"\nLowest cross-validated RMSE: {best_model}")
 
@@ -486,7 +488,7 @@ print(robust)
 
 heading(
     "DONE - saved: "
-    + OUTPUT_FILE
+    + os.path.basename(OUTPUT_FILE)
     + ", model_comparison.csv, Figures/fig1_goals_and_correlation.png, "
     + "Figures/fig2_predicted_vs_actual.png, Figures/fig3_residual_diagnostics.png, "
     + "Figures/fig4_top5_vs_goals.png"
