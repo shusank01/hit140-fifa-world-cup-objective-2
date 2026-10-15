@@ -5,10 +5,12 @@ using exactly 8 explanatory variables that are known before the match.
 
 Input:  Data_2.csv
 Outputs: Data_2_2_final.csv, model_comparison.csv,
-         fig1_goals_and_correlation.png, fig2_predicted_vs_actual.png,
-         fig3_residual_diagnostics.png, fig4_top5_vs_goals.png
+         Figures/fig1_goals_and_correlation.png, Figures/fig2_predicted_vs_actual.png,
+         Figures/fig3_residual_diagnostics.png, Figures/fig4_top5_vs_goals.png
 
 """
+
+import os
 
 import matplotlib
 matplotlib.use("Agg")
@@ -37,7 +39,10 @@ from sklearn.preprocessing import StandardScaler
 
 DATA_FILE = "Data_2.csv"
 OUTPUT_FILE = "Data_2_2_final.csv"
+FIG_DIR = "Figures"
 SEED = 42
+
+os.makedirs(FIG_DIR, exist_ok=True)
 
 ID_COLS = ["match_id", "date", "team", "opponent"]
 TARGET = "goals_for"
@@ -150,7 +155,7 @@ sns.heatmap(
 )
 ax[1].set_title("Correlation matrix")
 plt.tight_layout()
-plt.savefig("fig1_goals_and_correlation.png", dpi=160, bbox_inches="tight")
+plt.savefig(os.path.join(FIG_DIR, "fig1_goals_and_correlation.png"), dpi=160, bbox_inches="tight")
 plt.close()
 
 # 2b. Top-five-league players vs goals.
@@ -191,7 +196,7 @@ ax.set_title(
 )
 ax.legend(loc="best", fontsize=8)
 plt.tight_layout()
-plt.savefig("fig4_top5_vs_goals.png", dpi=160, bbox_inches="tight")
+plt.savefig(os.path.join(FIG_DIR, "fig4_top5_vs_goals.png"), dpi=160, bbox_inches="tight")
 plt.close()
 
 # 3. Train/test split: both team rows from a match remain in the same partition.
@@ -275,7 +280,7 @@ ax.set_title(
 )
 ax.legend(loc="best")
 plt.tight_layout()
-plt.savefig("fig2_predicted_vs_actual.png", dpi=160, bbox_inches="tight")
+plt.savefig(os.path.join(FIG_DIR, "fig2_predicted_vs_actual.png"), dpi=160, bbox_inches="tight")
 plt.close()
 
 # 6. Five-fold cross-validation for ordinary linear regression.
@@ -455,7 +460,7 @@ ax[2].set_xlabel("Residuals")
 ax[2].set_ylabel("Frequency")
 ax[2].set_title("Residual histogram")
 plt.tight_layout()
-plt.savefig("fig3_residual_diagnostics.png", dpi=160, bbox_inches="tight")
+plt.savefig(os.path.join(FIG_DIR, "fig3_residual_diagnostics.png"), dpi=160, bbox_inches="tight")
 plt.close()
 
 # 8. Optional full-data coefficient robustness summary. 
@@ -482,6 +487,7 @@ print(robust)
 heading(
     "DONE - saved: "
     + OUTPUT_FILE
-    + ", model_comparison.csv, fig1_goals_and_correlation.png, "
-    + "fig2_predicted_vs_actual.png, fig3_residual_diagnostics.png, fig4_top5_vs_goals.png"
+    + ", model_comparison.csv, Figures/fig1_goals_and_correlation.png, "
+    + "Figures/fig2_predicted_vs_actual.png, Figures/fig3_residual_diagnostics.png, "
+    + "Figures/fig4_top5_vs_goals.png"
 )
