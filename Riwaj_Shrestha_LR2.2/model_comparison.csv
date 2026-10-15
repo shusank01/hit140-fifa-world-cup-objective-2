@@ -1,0 +1,8 @@
+Model,RMSE,RMSE std,MAE,R-squared,RMSE vs baseline (%)
+Baseline (always the mean),1.376,0.224,1.114,-0.018,0.0
+"OLS, top-5 players only",1.271,0.179,0.998,0.119,-7.6
+"OLS, all 8 variables",1.252,0.176,0.962,0.146,-9.0
+Ridge (alpha=10),1.248,0.181,0.963,0.154,-9.3
+Lasso (alpha=0.1),1.251,0.194,0.976,0.154,-9.1
+Poisson (alpha=0.1),1.259,0.168,0.961,0.134,-8.5
+Random forest (depth 3),1.258,0.167,0.978,0.135,-8.6
